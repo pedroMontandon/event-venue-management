@@ -19,6 +19,7 @@ services:
       - DB_PASS=root
       - DB_HOST=db
       - DB_PORT=3306
+      - HOST=http://localhost
     healthcheck:
       test: ["CMD", "lsof", "-t", "-i:3001"]
       timeout: 10s
