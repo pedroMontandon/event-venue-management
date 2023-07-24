@@ -7,6 +7,6 @@ const router = Router();
 
 router.post('/login', Validations.validateLogin, (req: Request, res: Response) => userController.login(req, res));
 router.post('/signup', Validations.validateLogin, Validations.validateSignUp, (req: Request, res: Response) => userController.signUp(req, res));
-router.get('/activate/:userId/:activationCode')
+router.get('/activate/:userId/:activationCode', (req: Request, res: Response) => userController.activateAccount(req, res));
 
 export default router;

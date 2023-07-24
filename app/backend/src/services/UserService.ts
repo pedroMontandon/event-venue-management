@@ -28,4 +28,14 @@ export default class UserService {
     await emailQueue.add({ email: user.email, username: user.username, code: buildActivationUrl({ id, activationCode })});
     return { status: 'CREATED', data: { message: `${user.username} account was created. Access ${user.email} and click on the link to activate your account` } };
   }
+
+  async activateAccount(id: number, activationCode: string): Promise<ServiceResponse<{ message: string }>> {
+    const user = await this.userModel.findById(id);
+    if(!user) return { status: 'NOT_FOUND', data: { message: 'User not found' } };
+    if(user?.activationCode === activationCode) {
+      await this.userModel.update(id, { activated: true });
+      return { status: 'SUCCESSFUL', data: { message: 'Account activated successfully' } };
+    }
+    return { status: 'INVALID_DATA', data: { message: 'Wrong activation code' } };
+  }
 }

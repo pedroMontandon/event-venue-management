@@ -14,5 +14,11 @@ export default class UserController {
     const { status, data } = await this.userService.signUp(req.body);
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  async activateAccount(req: Request, res: Response): Promise<Response> {
+    const { userId, activationCode } = req.params;
+    const { status, data } = await this.userService.activateAccount(Number(userId), activationCode);
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }
 
