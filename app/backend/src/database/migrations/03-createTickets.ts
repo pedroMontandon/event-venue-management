@@ -35,9 +35,14 @@ export default {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      reclaimed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
       accessKey: {
         type: DataTypes.STRING,
         allowNull: true,
+        field: 'access_key',
       }
     });
   },

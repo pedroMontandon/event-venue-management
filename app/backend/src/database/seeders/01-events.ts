@@ -27,6 +27,14 @@ export default {
         is_open: false,
         places_remaining: 30,
       },
+      {
+        event_name: 'Free, without ticket',
+        description: 'yeah!',
+        date: '2023-12-25:22:00',
+        price: 0,
+        is_open: true,
+        places_remaining: null,
+      }
     ]);
   },
   down: async (queryInterface: QueryInterface) => {

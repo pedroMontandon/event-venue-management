@@ -7,25 +7,29 @@ export default {
         event_id: 1,
         user_id: 1,
         visitor: 'Pedro',
-        accessKey: null
+        reclaimed: false,
+        access_key: '1Pedro'
       },
       {
         event_id: 1,
         user_id: 1,
         visitor: 'Gabriel',
-        accessKey: null
+        reclaimed: true,
+        access_key: '1Gabriel'
       },
       {
         event_id: 2,
         user_id: 2,
         visitor: 'Gabriel',
-        accessKey: null
+        reclaimed: false,
+        access_key: '2Gabriel'
       },
       {
         event_id: 3,
         user_id: 1,
         visitor: 'Pedro',
-        accessKey: 'closed_event'
+        reclaimed: false,
+        access_key: '3Pedro'
       }
     ])
   },

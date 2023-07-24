@@ -33,7 +33,7 @@ export default {
       },
       placesRemaining: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         field: 'places_remaining',
       },
     });

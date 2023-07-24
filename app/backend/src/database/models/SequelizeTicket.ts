@@ -14,6 +14,7 @@ import {
     declare eventId: number;
     declare userId: number;
     declare visitor: string;
+    declare reclaimed: boolean;
     declare accessKey: string;
   }
 
@@ -33,6 +34,10 @@ import {
     },
     visitor: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    reclaimed: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     accessKey: {

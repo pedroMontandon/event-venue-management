@@ -3,5 +3,6 @@ export interface ITicket {
   eventId: number;
   userId: number;
   visitor: string;
+  reclaimed: boolean;
   accessKey: string;
 }
