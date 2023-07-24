@@ -25,6 +25,15 @@ export default {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      activationCode: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        field: 'activation_code',
+      },
+      activated: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      }
     });
   },
   down: async (queryInterface: QueryInterface) => {

@@ -1,8 +1,4 @@
 import { Options } from 'sequelize';
-import * as dotenv from 'dotenv';
-dotenv.config();
-
-
 
 const config: Options = {
   username: process.env.DB_USER || 'root',
@@ -17,5 +13,4 @@ const config: Options = {
   logging: false,
 }
 
-// export default config;
 export = config;

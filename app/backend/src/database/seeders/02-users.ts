@@ -8,12 +8,24 @@ export default {
         email: 'admin@example.com',
         password: 'adminPassword',
         role: 'admin',
+        activation_code: '123456',
+        activated: true,
       },
       {
         username: 'user',
         email: 'user@example.com',
         password: 'userPassword',
         role: 'user',
+        activation_code: '123456',
+        activated: true,
+      },
+      {
+        username: 'inactiveUser',
+        email: 'inactiveUser@example.com',
+        password: 'inactiveUserPassword',
+        role: 'user',
+        activation_code: '123456',
+        activated: false,
       }
     ])
   },
