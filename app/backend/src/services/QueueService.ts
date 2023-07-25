@@ -1,5 +1,5 @@
 import * as Queue from 'bull';
-import { sendCodeEmail } from '../utils/sendEmail';
+import { sendBoughtTicketEmail, sendCodeEmail } from '../utils/sendEmail';
 
 export const emailQueue = new Queue('emailAuthentication', {
   redis: {
@@ -10,8 +10,14 @@ export const emailQueue = new Queue('emailAuthentication', {
 
 emailQueue.process(async (job) => {
   try {
-    const { data: { email, username, code } } = job;
-    await sendCodeEmail(email, username, code);
+    if (job.data.method === 'sendCodeEmail') {
+      const { data: { email, username, code } } = job;
+      await sendCodeEmail(email, username, code);
+    }
+    if (job.data.method === 'sendBoughtTicketEmail') {
+      const { data: { email, eventName, visitor, date } } = job;
+      await sendBoughtTicketEmail(email, eventName, visitor, date);
+    }
   } catch (error) {
     console.log(error);
   }

@@ -10,6 +10,16 @@ const transport = nodemailer.createTransport({
   },
 });
 
+export async function sendBoughtTicketEmail(email: string, eventName: string, visitor: string, date: string): Promise<void> {
+  await transport.sendMail({
+    from: 'event-venue@example.com',
+    to: email,
+    subject: 'Bought Ticket',
+    html: `<h1>Ticket bought by you</h1><p>The ${eventName} event ticket was purchased for ${visitor}</p>. 
+    <p>Please, present this ticket on the day of the event (${date})</p>`,
+  });
+}
+
 export async function sendCodeEmail(email:string, username: string, code:string): Promise<void> {
   await transport.sendMail({
     from: 'event-venue@example.com',

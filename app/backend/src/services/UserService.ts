@@ -25,7 +25,7 @@ export default class UserService {
     }
     const cryptedPassword = await bcrypt.hash(user.password, 10);
     const { id, activationCode } = await this.userModel.create({ username: user.username, email: user.email, password: cryptedPassword, role: 'user', activationCode: activationCodeGenerator.generateActivationCode(), activated: false });
-    await emailQueue.add({ email: user.email, username: user.username, code: buildActivationUrl({ id, activationCode })});
+    await emailQueue.add({method: 'sendCodeEmail', email: user.email, username: user.username, code: buildActivationUrl({ id, activationCode })});
     return { status: 'CREATED', data: { message: `${user.username} account was created. Access ${user.email} and click on the link to activate your account` } };
   }
 
