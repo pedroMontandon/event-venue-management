@@ -33,6 +33,12 @@ export default class EventModel implements IEventModel {
     return { ...event, ...data };
   }
 
+  async updatePlaces(id: number): Promise<void> {
+    const event = await this.model.findByPk(id);
+    const placesRemaining = event?.placesRemaining as number - 1;
+    await this.model.update({ placesRemaining }, { where: { id } });
+  }
+
   async delete(id: number): Promise<number> {
     const deletedEvent = await this.model.destroy({where: {id}});
     return deletedEvent;

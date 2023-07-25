@@ -34,4 +34,15 @@ export default class Validations {
     }
     return next();
   }
+
+  static validateVisitor(req: Request, res: Response, next: NextFunction): Response | void {
+    const { visitor } = req.body;
+    if (!visitor) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    if (visitor.length < 4) {
+      return res.status(400).json({ message: 'Visitor must be at least 4 characters long' });
+    }
+    return next();
+  }
 }
