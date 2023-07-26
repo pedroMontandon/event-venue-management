@@ -20,6 +20,17 @@ export async function sendBoughtTicketEmail(email: string, eventName: string, vi
   });
 }
 
+export async function sendInviteEmail(email: string, visitor: string, eventName: string, code: string): Promise<void> {
+  await transport.sendMail({
+    from: 'event-venue@example.com',
+    to: email,
+    subject: 'You Have Been Invited',
+    html: `<h1> You have been invited to ${eventName}</h1> 
+    <p>A invite has been made in the name of ${visitor}. Access your account and get your ticket</p>
+    <p>Here is your access code: ${code}</p>`,
+  });
+}
+
 export async function sendCodeEmail(email:string, username: string, code:string): Promise<void> {
   await transport.sendMail({
     from: 'event-venue@example.com',

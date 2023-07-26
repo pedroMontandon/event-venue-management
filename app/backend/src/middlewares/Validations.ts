@@ -4,6 +4,7 @@ import JwtUtils from '../utils/JwtUtils';
 export default class Validations {
   private static passwordLength = 6;
   private static emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  private static jwtUtils = new JwtUtils();
 
   static validateLogin(req: Request, res: Response, next: NextFunction): Response | void {
     const { email, password } = req.body;
@@ -42,6 +43,15 @@ export default class Validations {
     }
     if (visitor.length < 4) {
       return res.status(400).json({ message: 'Visitor must be at least 4 characters long' });
+    }
+    return next();
+  }
+
+  static validateAdmin(req: Request, res: Response, next: NextFunction): Response | void {
+    const token = req.headers.authorization;
+    const { role } = Validations.jwtUtils.decode(token as string);
+    if (role !== 'admin') {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
     return next();
   }
