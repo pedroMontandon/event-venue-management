@@ -45,4 +45,14 @@ export default class TicketService {
     await emailQueue.add({ method: 'sendBoughtTicketEmail', email, eventName: event.data.eventName, visitor, date: event.data.date });
     return { status: "CREATED", data: ticket };
   }
+
+  async reclaimTicket(ticketId: number, accessKey: string): Promise<ServiceResponse<{message: string}>> {
+    const ticket = await this.ticketModel.findById(ticketId);
+    if (!ticket) return { status: 'NOT_FOUND', data: { message: 'Ticket not found' } };
+    if (ticket.accessKey !== accessKey) return { status: 'INVALID_DATA', data: { message: 'Wrong access key' } };
+    if (ticket.reclaimed) return { status: 'INVALID_DATA', data: { message: 'Ticket already reclaimed' } };
+    await this.ticketModel.update(ticketId, { reclaimed: true });
+    return { status: 'SUCCESSFUL', data: { message: `${ticket.visitor}'s ticket (id: ${ticketId}) reclaimed`} };
+  }
+
 }

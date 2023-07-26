@@ -55,4 +55,13 @@ export default class Validations {
     }
     return next();
   }
+
+  static validateEmployee(req: Request, res: Response, next: NextFunction): Response | void {
+    const token = req.headers.authorization;
+    const { role } = Validations.jwtUtils.decode(token as string);
+    if (role === 'user') {
+      return res.status(401).json({ message: 'Only employees and admins can access this endpoint' });
+    }
+    return next();
+  }
 }

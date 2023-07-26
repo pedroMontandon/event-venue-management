@@ -18,4 +18,11 @@ export default class TicketController {
     const ticket = await this.ticketService.buyTicket(+eventId, visitor, token as string);
     return res.status(mapStatusHTTP(ticket.status)).json(ticket.data);
   }
+
+  async reclaimTicket(req: Request, res: Response): Promise<Response> {
+    const { ticketId } = req.params;
+    const { accessKey } = req.body;
+    const { status, data } = await this.ticketService.reclaimTicket(+ticketId, accessKey);
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }

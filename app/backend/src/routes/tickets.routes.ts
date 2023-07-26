@@ -7,5 +7,6 @@ const router = Router();
 
 router.get('/mytickets', Validations.validateToken, (req: Request, res: Response) => ticketController.getMyTickets(req, res));
 router.post('/buyticket/:eventId', Validations.validateToken, Validations.validateVisitor, (req: Request, res: Response) => ticketController.buyTicket(req, res));
+router.patch('/reclaimticket/:ticketId', Validations.validateToken, Validations.validateEmployee, (req: Request, res: Response) => ticketController.reclaimTicket(req, res));
 
 export default router;
