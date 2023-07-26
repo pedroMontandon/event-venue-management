@@ -12,4 +12,9 @@ export default class AdminController {
     const { data, status } = await this.adminService.inviteUser(+userId, +eventId, visitor);
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  async createEvent(req: Request, res: Response): Promise<Response> {
+    const { data, status } = await this.adminService.createEvent(req.body);
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }

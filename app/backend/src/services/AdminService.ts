@@ -5,6 +5,8 @@ import TicketModel from "../models/TicketModel";
 import UserModel from "../models/UserModel";
 import * as bcrypt from "bcryptjs";
 import { emailQueue } from "./QueueService";
+import { IEvent } from "../interfaces/events/IEvent";
+import { NewEntity } from "../interfaces";
 
 export default class AdminService {
   constructor (private eventModel = new EventModel(), private userModel = new UserModel(), private ticketModel = new TicketModel()) {}
@@ -18,5 +20,10 @@ export default class AdminService {
     const ticket = await this.ticketModel.create({ eventId, userId, visitor, reclaimed: false, accessKey: bcrypt.hashSync(visitor, 10) });
     emailQueue.add({ method: 'sendInviteEmail', email: user.email, visitor, eventName: event.eventName, code: ticket.accessKey });
     return { status: 'CREATED', data: ticket };
+  }
+
+  async createEvent(data: NewEntity<IEvent>): Promise<ServiceResponse<IEvent>> {
+    const event = await this.eventModel.create(data);
+    return { status: 'CREATED', data: event };
   }
 }

@@ -4,6 +4,7 @@ import JwtUtils from '../utils/JwtUtils';
 export default class Validations {
   private static passwordLength = 6;
   private static emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  private static dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
   private static jwtUtils = new JwtUtils();
 
   static validateLogin(req: Request, res: Response, next: NextFunction): Response | void {
@@ -61,6 +62,35 @@ export default class Validations {
     const { role } = Validations.jwtUtils.decode(token as string);
     if (role === 'user') {
       return res.status(401).json({ message: 'Only employees and admins can access this endpoint' });
+    }
+    return next();
+  }
+
+  static validateEvent(req: Request, res: Response, next: NextFunction): Response | void {
+    const { eventName, description, date, price, isOpen, placesRemaining } = req.body;
+    if (!eventName || !description || !date) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    if (eventName.length < 3) {
+      return res.status(400).json({ message: 'Event name must be at least 3 characters long' });
+    }
+    if (description.length < 10) {
+      return res.status(400).json({ message: 'Event description must be at least 10 characters long' });
+    }
+    if (!Validations.dateTimeRegex.test(date)) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
+    if (price < 0) {
+      return res.status(400).json({ message: 'Invalid price' });
+    }
+    if (isOpen !== true && isOpen !== false) {
+      return res.status(400).json({ message: 'Event must be open' });
+    }
+    if (!placesRemaining && price !== 0) {
+      return res.status(400).json({ message: 'Ticketless events cannot be charged.' });
+    }
+    if (!placesRemaining && !isOpen) {
+      return res.status(400).json({ message: 'Ticketless events must be open.' });
     }
     return next();
   }
