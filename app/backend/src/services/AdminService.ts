@@ -26,4 +26,10 @@ export default class AdminService {
     const event = await this.eventModel.create(data);
     return { status: 'CREATED', data: event };
   }
+
+  async updateEvent(id: number, data: Partial<IEvent>): Promise<ServiceResponse<IEvent>> {
+    const event = await this.eventModel.update(id, data);
+    if (!event) return { status: 'NOT_FOUND', data: { message: 'Event not found' } };
+    return { status: 'SUCCESSFUL', data: event };
+  }
 }

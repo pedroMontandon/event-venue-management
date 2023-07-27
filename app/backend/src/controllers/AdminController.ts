@@ -17,4 +17,10 @@ export default class AdminController {
     const { data, status } = await this.adminService.createEvent(req.body);
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  async updateEvent(req: Request, res: Response): Promise<Response> {
+    const { eventId } = req.params;
+    const { data, status } = await this.adminService.updateEvent(+eventId, req.body);
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }
