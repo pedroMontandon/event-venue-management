@@ -32,9 +32,11 @@ export default class AdminService {
     const event = await this.eventModel.update(id, data);
     if (!event) return { status: 'NOT_FOUND', data: { message: 'Event not found' } };
     const eventTickets = await this.ticketModel.findByEventId(id) as ITicketUsers[];
-    eventTickets.forEach((ticket) => {
-      emailQueue.add({ method: 'sendUpdatedEventEmail', email: ticket.users[0].email, visitor: ticket.visitor, eventName: event.eventName });
-    })
+    if (Object.keys(data).includes('date')) {
+      eventTickets.forEach((ticket) => {
+        emailQueue.add({ method: 'sendUpdatedEventEmail', email: ticket.users[0].email, visitor: ticket.visitor, eventName: event.eventName });
+      })
+    }
     return { status: 'SUCCESSFUL', data: event };
   }
 }
