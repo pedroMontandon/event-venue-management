@@ -31,6 +31,15 @@ export async function sendInviteEmail(email: string, visitor: string, eventName:
   });
 }
 
+export async function sendUpdatedEventEmail(email: string, username: string, code: string): Promise<void> {
+  await transport.sendMail({
+    from: 'event-venue@example.com',
+    to: email,
+    subject: 'Event Updated',
+    html: `<h1>Update your account</h1><p>Access this page to update your account: ${code}</p>`,
+  });
+}
+
 export async function sendCodeEmail(email:string, username: string, code:string): Promise<void> {
   await transport.sendMail({
     from: 'event-venue@example.com',

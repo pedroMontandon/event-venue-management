@@ -54,15 +54,15 @@ import {
   SequelizeTicket.belongsToMany(SequelizeUser, {
     through: SequelizeTicket,
     as: 'users',
-    foreignKey: 'user_id',
-    otherKey: 'event_id'
+    foreignKey: 'id',
+    otherKey: 'userId'
   })
 
   SequelizeTicket.belongsToMany(SequelizeEvent, {
     through: SequelizeTicket,
     as: 'events',
-    foreignKey: 'event_id',
-    otherKey: 'user_id'
+    foreignKey: 'id',
+    otherKey: 'eventId'
   })
 
   export default SequelizeTicket;

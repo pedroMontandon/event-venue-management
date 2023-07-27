@@ -2,6 +2,8 @@ import { NewEntity } from "../interfaces";
 import SequelizeTicket from "../database/models/SequelizeTicket";
 import { ITicketModel } from "../interfaces/tickets/ITicketModel";
 import { ITicket } from "../interfaces/tickets/ITicket";
+import SequelizeEvent from "../database/models/SequelizeEvent";
+import SequelizeUser from "../database/models/SequelizeUser";
 
 export default class TicketModel implements ITicketModel {
   private model = SequelizeTicket;
@@ -19,6 +21,11 @@ export default class TicketModel implements ITicketModel {
   async findById(id: number): Promise<ITicket | null> {
     const ticket = await this.model.findByPk(id);
     return ticket;
+  }
+
+  async findByEventId(id: number): Promise<ITicket[]> {
+    const tickets = await this.model.findAll({ where: { eventId: id }, include: { model: SequelizeUser, as: 'users' } });
+    return tickets;
   }
 
   async findMyTickets(userId: number): Promise<ITicket[]> {
