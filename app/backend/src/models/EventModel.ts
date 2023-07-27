@@ -30,7 +30,7 @@ export default class EventModel implements IEventModel {
     const event = await this.model.findByPk(id);
     if (!event) return null;
     const modifiedEvent = await this.model.update(data, { where: { id } });
-    return { ...event, ...data };
+    return { ...event, ...data }.dataValues;
   }
 
   async updatePlaces(id: number): Promise<void> {

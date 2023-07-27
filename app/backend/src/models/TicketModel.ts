@@ -4,6 +4,7 @@ import { ITicketModel } from "../interfaces/tickets/ITicketModel";
 import { ITicket } from "../interfaces/tickets/ITicket";
 import SequelizeEvent from "../database/models/SequelizeEvent";
 import SequelizeUser from "../database/models/SequelizeUser";
+import { ITicketUsers } from "../interfaces/tickets/ITicketUsers";
 
 export default class TicketModel implements ITicketModel {
   private model = SequelizeTicket;
@@ -37,7 +38,7 @@ export default class TicketModel implements ITicketModel {
     const ticket = await this.model.findByPk(id);
     if (!ticket) return null;
     const modifiedTicket = await this.model.update(data, { where: { id } });
-    return { ...ticket, ...data };
+    return { ...ticket, ...data }.dataValues;
   }
 
   async delete(id: number): Promise<number> {
