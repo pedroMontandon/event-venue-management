@@ -39,4 +39,10 @@ export default class AdminService {
     }
     return { status: 'SUCCESSFUL', data: event };
   }
+
+  async deleteEvent(eventId: number): Promise<ServiceResponse<{ message: string }>> {
+    const event = await this.eventModel.delete(eventId);
+    if (!event) return { status: 'NOT_FOUND', data: { message: 'Event not found' } };
+    return { status: 'SUCCESSFUL', data: { message: `Event id(${eventId}) deleted` } };
+  }
 }

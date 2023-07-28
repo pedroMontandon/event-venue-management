@@ -23,4 +23,11 @@ export default class AdminController {
     const { data, status } = await this.adminService.updateEvent(+eventId, req.body);
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  async deleteEvent(req: Request, res: Response): Promise<Response> {
+    const { eventId } = req.params;
+    if (!Number(eventId)) return res.status(400).json({ message: 'Invalid event id' });
+    const { data, status } = await this.adminService.deleteEvent(+eventId);
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }
