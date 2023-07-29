@@ -30,4 +30,11 @@ export default class AdminController {
     const { data, status } = await this.adminService.deleteEvent(+eventId);
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  async deleteUser(req: Request, res: Response): Promise<Response> {
+    const { userId } = req.params;
+    if (!Number(userId)) return res.status(400).json({ message: 'Invalid user id' });
+    const { data, status } = await this.adminService.deleteUser(+userId);
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }
