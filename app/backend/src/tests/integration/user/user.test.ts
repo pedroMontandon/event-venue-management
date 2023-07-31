@@ -60,6 +60,7 @@ describe('User /login route', function () {
   it('Should return 200 if the user exists', async function () {
     const builtUser = SequelizeUser.build(validNewUser);
     sinon.stub(SequelizeUser, 'findOne').resolves(builtUser);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
     const res = await chai.request(app).post(`${route}/login`).send({ email: 'valid@email.com', password: 'validPassword' });
     expect(res.status).to.be.equal(200);
     expect(res.body).to.haveOwnProperty('token');
