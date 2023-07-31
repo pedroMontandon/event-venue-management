@@ -37,6 +37,6 @@ export default class UserService {
       await this.userModel.update(id, { activated: true });
       return { status: 'SUCCESSFUL', data: { message: 'Account activated successfully' } };
     }
-    return { status: 'INVALID_DATA', data: { message: 'Wrong activation code' } };
+    return { status: 'INVALID_DATA', data: { message: 'Invalid activation code' } };
   }
 }

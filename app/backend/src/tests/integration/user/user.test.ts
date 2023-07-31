@@ -9,7 +9,7 @@ import JwtUtils from '../../../utils/JwtUtils';
 import { app } from '../../../app';
 import SequelizeUser from '../../../database/models/SequelizeUser';
 
-import { validNewUser, validUser } from '../../mocks/userMocks';
+import { validNewUser } from '../../mocks/userMocks';
 import { emailQueue } from '../../../services/QueueService';
 
 chai.use(chaiHttp);
@@ -103,4 +103,34 @@ describe('User /signup route', function () {
     expect(res.status).to.be.equal(201);
     expect(res.body).to.deep.eq({message: `Valid User account was created. Access valid@example.com and click on the link to activate your account`});
   });
+})
+
+describe('User /activate/:userId/:activationCode route', function () {
+  beforeEach(function () { sinon.restore() });
+  it('Should return 400 if the userId is invalid', async function () {
+    const res = await chai.request(app).get(`${route}/activate/a/123`);
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Invalid userId' });
+  });
+  it('Should return 404 if the user is not found', async function () {
+    sinon.stub(SequelizeUser, 'findByPk').resolves(null);
+    const res = await chai.request(app).get(`${route}/activate/10/123`);
+    expect(res.status).to.be.equal(404);
+    expect(res.body).to.deep.eq({ message: 'User not found' });
+  });
+  it('Should return 400 if the activation code is invalid', async function () {
+    const builtUser = SequelizeUser.build(validNewUser);
+    sinon.stub(SequelizeUser, 'findByPk').resolves(builtUser);
+    const res = await chai.request(app).get(`${route}/activate/1/123`);
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Invalid activation code' });
+  });
+  it('Should return 200 if the user is activated', async function () {
+    const builtUser = SequelizeUser.build(validNewUser);
+    sinon.stub(SequelizeUser, 'findByPk').resolves(builtUser);
+    sinon.stub(SequelizeUser, 'update').resolves();
+    const res = await chai.request(app).get(`${route}/activate/1/validCode`);
+    expect(res.status).to.be.equal(200);
+    expect(res.body).to.deep.eq({ message: 'Account activated successfully' });
+  })
 })
