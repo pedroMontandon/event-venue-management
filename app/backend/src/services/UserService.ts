@@ -9,6 +9,7 @@ import activationCodeGenerator from "../utils/activationCodeGenerator";
 
 export default class UserService {
   constructor(private userModel = new UserModel()) {}
+  
   async login(user: { email: string, password: string }): Promise<ServiceResponse<Token>> {
     const jwtUtils = new JwtUtils();
     const foundUser = await this.userModel.findByEmail(user.email);
