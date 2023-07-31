@@ -9,7 +9,8 @@ import JwtUtils from '../../../utils/JwtUtils';
 import { app } from '../../../app';
 import SequelizeUser from '../../../database/models/SequelizeUser';
 
-import { validNewUser } from '../../mocks/userMocks';
+import { validNewUser, validUser } from '../../mocks/userMocks';
+import { emailQueue } from '../../../services/QueueService';
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -66,3 +67,40 @@ describe('User /login route', function () {
     expect(res.body).to.haveOwnProperty('token');
   });
 });
+
+describe('User /signup route', function () {
+  beforeEach(function () { sinon.restore() });
+  it('Should return 400 if the username is not provided', async function () {
+    const res = await chai.request(app).post(`${route}/signup`).send({
+      email: 'email@example.com',
+      password: 'password',
+    });
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Missing required fields' });
+  });
+  it('Should return 400 if the email already exists', async function () {
+    const builtUser = SequelizeUser.build(validNewUser);
+    sinon.stub(SequelizeUser, 'findOne').resolves(builtUser);
+    const res = await chai.request(app).post(`${route}/signup`).send({
+      username: 'user',
+      email: 'email@example.com',
+      password: 'password',
+    });
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'User already exists' });
+  });
+  it('Should return 201 if the user is created', async function () {
+    const builtUser = SequelizeUser.build(validNewUser);
+    sinon.stub(SequelizeUser, 'findOne').resolves(null);
+    sinon.stub(SequelizeUser, 'create').resolves(builtUser);
+    sinon.stub(bcrypt, 'hashSync').resolves('validPassword');
+    sinon.stub(emailQueue, 'add').resolves();
+    const res = await chai.request(app).post(`${route}/signup`).send({
+      username: 'Valid User',
+      email: 'valid@example.com',
+      password: 'validPassword',
+    });
+    expect(res.status).to.be.equal(201);
+    expect(res.body).to.deep.eq({message: `Valid User account was created. Access valid@example.com and click on the link to activate your account`});
+  });
+})
