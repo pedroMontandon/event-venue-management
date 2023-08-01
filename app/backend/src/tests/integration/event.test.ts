@@ -35,5 +35,10 @@ describe('Event / route', function () {
     const res = await chai.request(app).get(`${route}/`).set('Authorization', 'admin token');
     expect(res.status).to.be.equal(200);
     expect(res.body).to.deep.eq(returnedEvents);
+  });
+  it('Should return 500 if the token is invalid', async function () {
+    const res = await chai.request(app).get(`${route}/`).set('Authorization', 'invalid token');
+    expect(res.status).to.be.equal(500);
+    expect(res.body).to.deep.eq({ message: 'Internal server error' });
   });   
 })
