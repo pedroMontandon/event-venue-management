@@ -14,7 +14,7 @@ export default class UserService {
     const jwtUtils = new JwtUtils();
     const foundUser = await this.userModel.findByEmail(user.email);
     if (!foundUser || !bcrypt.compareSync(user.password, foundUser?.password)) {
-      return { status: 'INVALID_DATA', data: { message: 'Wrong username or password' } };
+      return { status: 'INVALID_DATA', data: { message: 'Invalid username or password' } };
     }
     const token = jwtUtils.sign({ id: foundUser.id, email: foundUser.email, role: foundUser.role });
       return { status: "SUCCESSFUL", data: { token: token } };

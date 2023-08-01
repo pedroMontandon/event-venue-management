@@ -10,7 +10,7 @@ export default class EventService {
 
   async findAll(token: string | undefined): Promise<ServiceResponse<IEvent[]>> {
     try {
-      if (!token|| !this.jwtUtils.isAdmin(token)) {
+      if (!token || !this.jwtUtils.isAdmin(token)) {
         const events = await this.eventModel.findAllOpened();
         return { status: "SUCCESSFUL", data: events };
       }

@@ -5,12 +5,12 @@ import { Response } from 'superagent';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 
-import JwtUtils from '../../../utils/JwtUtils';
-import { app } from '../../../app';
-import SequelizeUser from '../../../database/models/SequelizeUser';
+import JwtUtils from '../../utils/JwtUtils';
+import { app } from '../../app';
+import SequelizeUser from '../../database/models/SequelizeUser';
 
-import { validNewUser } from '../../mocks/userMocks';
-import { emailQueue } from '../../../services/QueueService';
+import { validNewUser } from '../mocks/userMocks';
+import { emailQueue } from '../../services/QueueService';
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -49,19 +49,29 @@ describe('User /login route', function () {
     expect(res.status).to.be.eq(400);
     expect(res.body).to.deep.eq({ message: 'Password must be at least 6 characters long' });
   });
-  it('Should return 400 if the user does not exist or the password is invalid', async function () {
+  it('Should return 400 if the user does not exist', async function () {
     sinon.stub(SequelizeUser, 'findOne').resolves(null);
     const res = await chai.request(app).post(`${route}/login`).send({
       email: 'email@example.com',
       password: 'password',
     });
     expect(res.status).to.be.equal(400);
-    expect(res.body).to.deep.eq({ message: 'Wrong username or password' });
+    expect(res.body).to.deep.eq({ message: 'Invalid username or password' });
+  });
+  it('Should return 400 if the password is not crypted', async function () {
+    const builtUser = SequelizeUser.build(validNewUser);
+    sinon.stub(SequelizeUser, 'findOne').resolves(builtUser);
+    const res = await chai.request(app).post(`${route}/login`).send({
+      email: 'valid@email.com',
+      password: 'invalidPassword',
+    });
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Invalid username or password' });
   });
   it('Should return 200 if the user exists', async function () {
     const builtUser = SequelizeUser.build(validNewUser);
     sinon.stub(SequelizeUser, 'findOne').resolves(builtUser);
-    sinon.stub(bcrypt, 'compareSync').resolves(true);
+    sinon.stub(bcrypt, 'compareSync').returns(true);
     const res = await chai.request(app).post(`${route}/login`).send({ email: 'valid@email.com', password: 'validPassword' });
     expect(res.status).to.be.equal(200);
     expect(res.body).to.haveOwnProperty('token');
