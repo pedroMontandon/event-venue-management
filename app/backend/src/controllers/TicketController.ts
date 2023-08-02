@@ -15,6 +15,9 @@ export default class TicketController {
     const { visitor } = req.body;
     const { eventId } = req.params;
     const token = req.headers.authorization;
+    if(!Number(eventId)) {
+      return res.status(400).json({ message: 'Invalid eventId' });
+    }
     const ticket = await this.ticketService.buyTicket(+eventId, visitor, token as string);
     return res.status(mapStatusHTTP(ticket.status)).json(ticket.data);
   }

@@ -5,5 +5,5 @@ export interface IEvent {
   date: Date;
   price: number;
   isOpen: boolean;
-  placesRemaining: number;
+  placesRemaining?: number;
 }

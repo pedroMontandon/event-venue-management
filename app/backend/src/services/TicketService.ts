@@ -25,12 +25,12 @@ export default class TicketService {
   async eventAvailability(eventId: number): Promise<ServiceResponse<IEvent>> {
     const event = await this.eventModel.findById(eventId);
     if (!event) return { status: 'NOT_FOUND', data: { message: 'Event not found' } };
-    if (!event.isOpen) return { status : 'UNAUTHORIZED', data: { message: 'Event is closed. Contact your administrator for more information' } };
-    if (event.placesRemaining === null) {
+    if (!event.isOpen) return { status : 'UNAUTHORIZED', data: { message: 'Event is closed. Contact your administrator for more information.' } };
+    if (!event.placesRemaining && event.placesRemaining !== 0) {
       return { status: 'INVALID_DATA', data: { message: 'This event does not require a ticket.' } };
     }
     if (Number(event.placesRemaining) < 1) {
-      return { status: 'INVALID_DATA', data: { message: 'Event is full' } };
+      return { status: 'INVALID_DATA', data: { message: 'Event is full.' } };
     }
     return { status: 'SUCCESSFUL', data: event };
   }
@@ -43,7 +43,7 @@ export default class TicketService {
     const ticket = await this.ticketModel.create({ eventId, userId: id, visitor, reclaimed: false, accessKey });
     await this.eventModel.updatePlaces(eventId);
     await emailQueue.add({ method: 'sendBoughtTicketEmail', email, eventName: event.data.eventName, visitor, date: event.data.date });
-    return { status: "CREATED", data: ticket };
+    return { status: 'CREATED', data: ticket };
   }
 
   async reclaimTicket(ticketId: number, accessKey: string): Promise<ServiceResponse<{message: string}>> {

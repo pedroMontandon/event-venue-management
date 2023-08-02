@@ -14,7 +14,7 @@ import {
     declare date: Date;
     declare price: number;
     declare isOpen: boolean;
-    declare placesRemaining: number;
+    declare placesRemaining: CreationOptional<number>;
   }
 
   SequelizeEvent.init({
