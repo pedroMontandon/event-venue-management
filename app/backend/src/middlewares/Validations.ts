@@ -31,10 +31,15 @@ export default class Validations {
 
   static validateToken(req: Request, res: Response, next: NextFunction): Response | void {
     const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
+    try {
+      if (!token) {
+        return res.status(401).json({ message: 'Insert a token' });
+      }
+      Validations.jwtUtils.verify(token as string);
+      return next();
+    } catch {
+      return res.status(401).json({ message: 'Insert a valid token' });
     }
-    return next();
   }
 
   static validateVisitor(req: Request, res: Response, next: NextFunction): Response | void {
