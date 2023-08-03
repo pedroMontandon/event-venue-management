@@ -14,7 +14,7 @@ import { emailQueue } from '../../services/QueueService';
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const route = '/tickets'
+const route = '/tickets';
 
 describe('Ticket /mytickets route', function () {
   beforeEach(function () { sinon.restore() });

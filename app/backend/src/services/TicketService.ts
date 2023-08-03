@@ -15,7 +15,7 @@ export default class TicketService {
     const userId = this.jwtUtils.decode(token).id;
     const tickets = await this.ticketModel.findMyTickets(userId);
     return { status: "SUCCESSFUL", data: tickets };
-  }
+  };
 
   async eventAvailability(eventId: number): Promise<ServiceResponse<IEvent>> {
     const event = await this.eventModel.findById(eventId);
@@ -28,7 +28,7 @@ export default class TicketService {
       return { status: 'INVALID_DATA', data: { message: 'Event is full.' } };
     }
     return { status: 'SUCCESSFUL', data: event };
-  }
+  };
 
   async buyTicket(eventId: number, visitor: string, token: string): Promise<ServiceResponse<ITicket>> {
     const event = await this.eventAvailability(eventId);

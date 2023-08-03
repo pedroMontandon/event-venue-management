@@ -21,12 +21,12 @@ export default class AdminService {
     const ticket = await this.ticketModel.create({ eventId, userId, visitor, reclaimed: false, accessKey: bcrypt.hashSync(visitor, 10) });
     emailQueue.add({ method: 'sendInviteEmail', email: user.email, visitor, eventName: event.eventName, code: ticket.accessKey });
     return { status: 'CREATED', data: ticket };
-  }
+  };
 
   async createEvent(data: NewEntity<IEvent>): Promise<ServiceResponse<IEvent>> {
     const event = await this.eventModel.create(data);
     return { status: 'CREATED', data: event };
-  }
+  };
 
   async getEventTickets(eventId: number): Promise<ServiceResponse<ITicketUsers[]>> {
     const tickets = await this.ticketModel.findByEventId(eventId) as ITicketUsers[];

@@ -51,25 +51,25 @@ export default class Validations {
       return res.status(400).json({ message: 'Visitor must be at least 4 characters long' });
     }
     return next();
-  }
+  };
 
   static validateAdmin(req: Request, res: Response, next: NextFunction): Response | void {
     const token = req.headers.authorization;
     const { role } = Validations.jwtUtils.decode(token as string);
     if (role !== 'admin') {
       return res.status(401).json({ message: 'Unauthorized' });
-    }
+    };
     return next();
-  }
+  };
 
   static validateEmployee(req: Request, res: Response, next: NextFunction): Response | void {
     const token = req.headers.authorization;
     const { role } = Validations.jwtUtils.decode(token as string);
     if (role === 'user') {
       return res.status(401).json({ message: 'Only employees and admins can access this endpoint' });
-    }
+    };
     return next();
-  }
+  };
 
   static validateEvent(req: Request, res: Response, next: NextFunction): Response | void {
     const { eventName, description, date, price, isOpen, placesRemaining } = req.body;

@@ -8,7 +8,7 @@ export default class AdminController {
   async inviteUser(req: Request, res: Response): Promise<Response> {
     const { userId, eventId } = req.params;
     const { visitor } = req.body;
-
+    if (!Number(userId) || !Number(eventId)) return res.status(400).json({ message: 'Invalid params' });
     const { data, status } = await this.adminService.inviteUser(+userId, +eventId, visitor);
     return res.status(mapStatusHTTP(status)).json(data);
   }
