@@ -104,3 +104,57 @@ describe('Ticket /buyticket/:eventId route', function () {
     expect(res.body).to.deep.eq(builtTicket.dataValues);
   });
 })
+
+describe('Ticket /reclaimticket/:ticketId route', function () {
+  beforeEach(function () { sinon.restore() });
+  it('Should return 401 if the user is not employee or admin', async function () {
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'user', email: 'user@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'user', email: 'user@email' });
+    const res = await chai.request(app).patch(`${route}/reclaimticket/1`).set('Authorization', 'user token');
+    expect(res.status).to.be.equal(401);
+    expect(res.body).to.deep.eq({ message: 'Only employees and admins can access this endpoint' });
+  });
+  it('Should return 400 if ticketId is not a number', async function () {
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    const res = await chai.request(app).patch(`${route}/reclaimticket/abc`).set('Authorization', 'admin token');
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Invalid ticketId' });
+  });
+  it('Should return 404 if the ticket does not exist', async function () {
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(SequelizeTicket, 'findByPk').resolves(null);
+    const res = await chai.request(app).patch(`${route}/reclaimticket/999`).set('Authorization', 'admin token');
+    expect(res.status).to.be.equal(404);
+    expect(res.body).to.deep.eq({ message: 'Ticket not found' });
+  });
+  it('Should return 400 if the access key is invalid', async function () {
+    const builtTicket = SequelizeTicket.build(validTickets[0]);
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(SequelizeTicket, 'findByPk').resolves(builtTicket);
+    const res = await chai.request(app).patch(`${route}/reclaimticket/1`).set('Authorization', 'admin token');
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Invalid access key' });
+  });
+  it('Should return 400 if the ticket is already reclaimed', async function () {
+    const builtTicket = SequelizeTicket.build(validTickets[2]);
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(SequelizeTicket, 'findByPk').resolves(builtTicket);
+    const res = await chai.request(app).patch(`${route}/reclaimticket/1`).set('Authorization', 'admin token').send({ accessKey: 'accessKey3' });
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Ticket already reclaimed' });
+  });
+  it('Should return 200 if you can reclaim the ticket', async function () {
+    const builtTicket = SequelizeTicket.build(validTickets[0]);
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(SequelizeTicket, 'findByPk').resolves(builtTicket);
+    sinon.stub(SequelizeTicket, 'update').resolves();
+    const res = await chai.request(app).patch(`${route}/reclaimticket/1`).set('Authorization', 'admin token').send({ accessKey: 'accessKey1' });
+    expect(res.status).to.be.equal(200);
+    expect(res.body).to.deep.eq({ message: `visitor1's ticket (id: 1) has been reclaimed successfully.` });
+  });
+})

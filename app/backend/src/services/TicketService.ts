@@ -11,11 +11,6 @@ export default class TicketService {
   constructor (private ticketModel = new TicketModel(), private eventModel = new EventModel()) {}
   private jwtUtils = new JwtUtils();
 
-  async findAll(): Promise<ServiceResponse<ITicket[]>> {
-    const tickets = await this.ticketModel.findAll();
-    return { status: "SUCCESSFUL", data: tickets };
-  }
-
   async getMyTickets(token: string): Promise<ServiceResponse<ITicket[]>> {
     const userId = this.jwtUtils.decode(token).id;
     const tickets = await this.ticketModel.findMyTickets(userId);
@@ -44,15 +39,14 @@ export default class TicketService {
     await this.eventModel.updatePlaces(eventId);
     await emailQueue.add({ method: 'sendBoughtTicketEmail', email, eventName: event.data.eventName, visitor, date: event.data.date });
     return { status: 'CREATED', data: ticket };
-  }
+  };
 
   async reclaimTicket(ticketId: number, accessKey: string): Promise<ServiceResponse<{message: string}>> {
     const ticket = await this.ticketModel.findById(ticketId);
     if (!ticket) return { status: 'NOT_FOUND', data: { message: 'Ticket not found' } };
-    if (ticket.accessKey !== accessKey) return { status: 'INVALID_DATA', data: { message: 'Wrong access key' } };
+    if (ticket.accessKey !== accessKey) return { status: 'INVALID_DATA', data: { message: 'Invalid access key' } };
     if (ticket.reclaimed) return { status: 'INVALID_DATA', data: { message: 'Ticket already reclaimed' } };
     await this.ticketModel.update(ticketId, { reclaimed: true });
-    return { status: 'SUCCESSFUL', data: { message: `${ticket.visitor}'s ticket (id: ${ticketId}) reclaimed`} };
-  }
-
-}
+    return { status: 'SUCCESSFUL', data: { message: `${ticket.visitor}'s ticket (id: ${ticketId}) has been reclaimed successfully.` } };
+  };
+};

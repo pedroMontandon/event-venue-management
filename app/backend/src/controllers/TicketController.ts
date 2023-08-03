@@ -17,7 +17,7 @@ export default class TicketController {
     const token = req.headers.authorization;
     if(!Number(eventId)) {
       return res.status(400).json({ message: 'Invalid eventId' });
-    }
+    };
     const ticket = await this.ticketService.buyTicket(+eventId, visitor, token as string);
     return res.status(mapStatusHTTP(ticket.status)).json(ticket.data);
   }
@@ -25,6 +25,9 @@ export default class TicketController {
   async reclaimTicket(req: Request, res: Response): Promise<Response> {
     const { ticketId } = req.params;
     const { accessKey } = req.body;
+    if(!Number(ticketId)) {
+      return res.status(400).json({ message: 'Invalid ticketId' });
+    };
     const { status, data } = await this.ticketService.reclaimTicket(+ticketId, accessKey);
     return res.status(mapStatusHTTP(status)).json(data);
   }
