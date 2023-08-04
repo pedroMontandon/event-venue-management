@@ -85,11 +85,11 @@ export default class Validations {
     if (!Validations.dateTimeRegex.test(date)) {
       return res.status(400).json({ message: 'Invalid date format' });
     }
-    if (price < 0) {
+    if ((!Number(price) && Number(price) !== 0) || price < 0) {
       return res.status(400).json({ message: 'Invalid price' });
     }
     if (isOpen !== true && isOpen !== false) {
-      return res.status(400).json({ message: 'Event must be open' });
+      return res.status(400).json({ message: 'isOpen must be a boolean' });
     }
     if (!placesRemaining && price !== 0) {
       return res.status(400).json({ message: 'Ticketless events cannot be charged.' });

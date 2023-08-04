@@ -30,8 +30,9 @@ export default class AdminService {
 
   async getEventTickets(eventId: number): Promise<ServiceResponse<ITicketUsers[]>> {
     const tickets = await this.ticketModel.findByEventId(eventId) as ITicketUsers[];
+    if(tickets.length < 1) return { status: 'NOT_FOUND', data: { message: 'Event not found' } };
     return { status: 'SUCCESSFUL', data: tickets };
-  }
+  };
 
   async updateEvent(id: number, data: Partial<IEvent>): Promise<ServiceResponse<IEvent>> {
     const event = await this.eventModel.update(id, data);
@@ -40,20 +41,20 @@ export default class AdminService {
     if (Object.keys(data).includes('date')) {
       eventTickets.forEach((ticket) => {
         emailQueue.add({ method: 'sendUpdatedEventEmail', email: ticket.users[0].email, visitor: ticket.visitor, eventName: event.eventName });
-      })
-    }
+      });
+    };
     return { status: 'SUCCESSFUL', data: event };
-  }
+  };
 
   async deleteEvent(eventId: number): Promise<ServiceResponse<{ message: string }>> {
     const event = await this.eventModel.delete(eventId);
     if (!event) return { status: 'NOT_FOUND', data: { message: 'Event not found' } };
     return { status: 'SUCCESSFUL', data: { message: `Event id(${eventId}) has been deleted` } };
-  }
+  };
 
   async deleteUser(userId: number): Promise<ServiceResponse<{ message: string }>> {
     const user = await this.userModel.delete(userId);
     if (!user) return { status: 'NOT_FOUND', data: { message: 'User not found' } };
     return { status: 'SUCCESSFUL', data: { message: `User id(${userId}) has been deleted` } };
-  }
-}
+  };
+};
