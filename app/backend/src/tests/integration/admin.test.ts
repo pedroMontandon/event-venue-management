@@ -197,3 +197,31 @@ describe('Admin /eventTickets/:eventId', function () {
   });
 });
 
+describe('Admin /updateEvent/:eventId', function () {
+  beforeEach(function () { sinon.restore() });
+  it('Should return 400 if eventId is not a number', async function () {
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    const res = await chai.request(app).put(`${route}/updateEvent/abc`).set('Authorization', 'admin token').send(validEvents[0]);
+    expect(res.status).to.be.equal(400);
+    expect(res.body).to.deep.eq({ message: 'Invalid eventId' });
+  });
+  it('Should return 404 if the event is not found', async function () {
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(SequelizeEvent, 'findByPk').resolves(null);
+    const res = await chai.request(app).put(`${route}/updateEvent/171`).set('Authorization', 'admin token').send(validEvents[0]);
+    expect(res.status).to.be.equal(404);
+    expect(res.body).to.deep.eq({ message: 'Event not found' });
+  });
+  it('Should return 200 if the event is updated', async function () {
+    const builtEvent = SequelizeEvent.build(validEvents[0]);
+    sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
+    sinon.stub(emailQueue, 'add').resolves();
+    sinon.stub(SequelizeEvent, 'findByPk').resolves(builtEvent);
+    const res = await chai.request(app).put(`${route}/updateEvent/1`).set('Authorization', 'admin token').send(validEvents[0]);
+    expect(res.status).to.be.equal(200);
+    expect(res.body).to.deep.eq(returnedEvents[0]);
+  });
+});
