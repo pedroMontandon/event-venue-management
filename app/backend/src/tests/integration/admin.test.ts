@@ -238,16 +238,15 @@ describe('Admin /deleteEvent/:eventId', function () {
   it('Should return 404 if the event is not found', async function () {
     sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
     sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
-    sinon.stub(SequelizeEvent, 'findByPk').resolves(null);
+    sinon.stub(SequelizeEvent, 'destroy').resolves(undefined);
     const res = await chai.request(app).delete(`${route}/deleteEvent/171`).set('Authorization', 'admin token');
     expect(res.status).to.be.equal(404);
     expect(res.body).to.deep.eq({ message: 'Event not found' });
   });
   it('Should return 200 if the event has been deleted', async function () {
-    const builtEvent = SequelizeEvent.build(validEvents[0]);
     sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
     sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
-    sinon.stub(SequelizeEvent, 'findByPk').resolves(builtEvent);
+    sinon.stub(SequelizeEvent, 'destroy').resolves(1);
     const res = await chai.request(app).delete(`${route}/deleteEvent/1`).set('Authorization', 'admin token');
     expect(res.status).to.be.equal(200);
     expect(res.body).to.deep.eq({ message: `Event id(1) has been deleted` });
@@ -279,5 +278,5 @@ describe('Admin /deleteUser/:userId', function () {
     const res = await chai.request(app).delete(`${route}/deleteUser/1`).set('Authorization', 'admin token');
     expect(res.status).to.be.equal(200);
     expect(res.body).to.deep.eq({ message: `User id(1) has been deleted` });
-  })
+  });
 });
