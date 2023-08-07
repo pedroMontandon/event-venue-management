@@ -265,16 +265,15 @@ describe('Admin /deleteUser/:userId', function () {
   it('Should return 404 if the user is not found', async function () {
     sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
     sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
-    sinon.stub(SequelizeUser, 'findByPk').resolves(null);
+    sinon.stub(SequelizeUser, 'destroy').resolves(undefined);
     const res = await chai.request(app).delete(`${route}/deleteUser/171`).set('Authorization', 'admin token');
     expect(res.status).to.be.equal(404);
     expect(res.body).to.deep.eq({ message: 'User not found' });
   });
   it('Should return 200 if the user has been deleted', async function () {
-    const builtUser = SequelizeUser.build(validNewUser);
     sinon.stub(JwtUtils.prototype, 'verify').returns({ id: 1, role: 'admin', email: 'admin@email' });
     sinon.stub(JwtUtils.prototype, 'decode').returns({ id: 1, role: 'admin', email: 'admin@email' });
-    sinon.stub(SequelizeUser, 'findByPk').resolves(builtUser);
+    sinon.stub(SequelizeUser, 'destroy').resolves(1);
     const res = await chai.request(app).delete(`${route}/deleteUser/1`).set('Authorization', 'admin token');
     expect(res.status).to.be.equal(200);
     expect(res.body).to.deep.eq({ message: `User id(1) has been deleted` });
